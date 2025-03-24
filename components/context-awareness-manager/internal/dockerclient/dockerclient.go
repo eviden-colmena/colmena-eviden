@@ -113,6 +113,9 @@ func (docker *DockerConnector) CreateAndStartContainer(ctx context.Context, imag
 	// Define the container configuration
 	config := &container.Config{
 		Image: imageName,
+		Env: []string{
+			"AGENT_ID="+os.Getenv("AGENT_ID"),
+		},
 	}
 	if len(cmd) > 0 {
 		config.Cmd = cmd
