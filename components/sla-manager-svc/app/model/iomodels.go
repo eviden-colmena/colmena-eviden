@@ -22,6 +22,7 @@ import (
 	"colmena/sla-management-svc/app/common"
 	"colmena/sla-management-svc/app/common/cfg"
 	"colmena/sla-management-svc/app/common/expressions"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/lithammer/shortuuid/v4"
@@ -183,8 +184,8 @@ func InputSLAModelToSLAModel(c *gin.Context) ([]SLA, error) {
 				sla.Details.Guarantees[0].Name = r.Id
 				sla.Details.Guarantees[0].Constraint = r.Kpis[0].Query
 				sla.Details.Guarantees[0].Query = expr
-				sla.Details.Guarantees[0].Scope = r.Kpis[0].Scope
-				sla.Details.Guarantees[0].ScopeTemplate = r.Kpis[0].Scope
+				sla.Details.Guarantees[0].Scope = strings.Trim(r.Kpis[0].Scope, " ")
+				sla.Details.Guarantees[0].ScopeTemplate = strings.Trim(r.Kpis[0].Scope, " ")
 
 				if len(sla.Details.Guarantees[0].Constraint) > 0 && len(sla.Details.Guarantees[0].Scope) > 0 {
 					sla.State = PAUSED

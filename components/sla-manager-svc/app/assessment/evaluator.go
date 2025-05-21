@@ -92,27 +92,27 @@ func AssessActiveQoSDefinitions(cfg Config) {
 
 							// violation?
 							violation := not != nil && len(result.Violated) > 0
-
 							if violation {
 								qosd.Assessment.TotalViolations += 1
 								qosd.Assessment.Violated = true
-
-								violation_result := GenerateViolationOutput(qosd, result)
-								if violation_result.ServiceId != "" {
-									violations = append(violations, violation_result)
-								}
 
 							} else {
 								qosd.Assessment.Violated = false
 							}
 
 							// check and set violation levels
-							checkViolationLevel(&qosd, totalResults)
+							//logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] SLA Assessment LEVEL ", qosd.Assessment.Level)
+							checkViolationLevel(&qosd, totalResults, result)
+							//logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] SLA Assessment LEVEL ", qosd.Assessment.Level)
 
 							// notify violations or status
 							if violation {
-								//not.NotifyViolations(&qosd, &result)
+								violation_result := GenerateViolationOutput(qosd, result)
+								if violation_result.ServiceId != "" {
+									violations = append(violations, violation_result)
+								}
 							} else {
+								//logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] SLA Assessment LEVEL ", qosd.Assessment.Level)
 								not.NotifyStatus(&qosd, &result)
 							}
 

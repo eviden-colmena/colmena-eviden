@@ -140,9 +140,9 @@ func evaluateExpression(expression *govaluate.EvaluableExpression, values amodel
 
 Levels: Broken, Critical, Met, Desired, Unstable, Unknown
 */
-func checkViolationLevel(qos *model.SLA, totalResults int) {
+func checkViolationLevel(qos *model.SLA, totalResults int, result amodel.Result) {
 	logs.GetLogger().Debug(pathLOG+"[checkViolationLevel] totalResults: ", totalResults)
-	if totalResults == 0 {
+	if totalResults == 0 && (result.LastExecution == nil) {
 		qos.Assessment.Level = model.ASSESSMENT_LEVEL_UNKNOWN
 		return
 	}

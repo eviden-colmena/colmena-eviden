@@ -28,6 +28,7 @@
     - [STARTED SLA](#started-sla)
       - [ASSESSMENT OK](#assessment-ok)
       - [VIOLATION](#violation)
+  - [4. Notifications and violations](#4-notifications-and-violations)
   - [LICENSES](#licenses)
 
 ----------------------------
@@ -140,14 +141,16 @@ docker run -ti -p 8081:8080 sla-manager:latest
 
 The following environment variables are used by the SLA & QoS Manager:
 
-  - **AGENT_ID** (e.g., "agente01")
-  - **PROMETHEUS_ADDRESS** (e.g., "http://prometheus:9090")
-  - **MONITORING_ADAPTER** (e.g., "prometheus")
-  - **NOTIFIER_ADAPTER** (e.g., "rest_endpoint")
-  - **NOTIFICATION_ENDPOINT** (e.g., "http://localhost:10090")
-  - **CONTEXT_ZENOH_ENDPOINT** (e.g., "http://zenoh-router:8000")
-  - **CONTEXT_ZENOH_CONTEXTS** (e.g., "colmena/contexts")
-  - **COMPOSE_PROJECT_NAME** (e.g., "sensor", "ColmenaAgent1")
+  - Prometheus / Local Metric collector:
+    - **PROMETHEUS_ADDRESS** (e.g., "http://prometheus:9090")
+    - **MONITORING_ADAPTER** (e.g., "prometheus")
+  - Notifications / Violations:
+    - **NOTIFIER_ADAPTER** (e.g., "rest_endpoint")
+    - **NOTIFICATION_ENDPOINT** (e.g., "http://localhost:10090")
+  - Zenoh:
+    - **CONTEXT_ZENOH_ENDPOINT** (e.g., "http://zenoh-router:8000")
+    - **CONTEXT_ZENOH_CONTEXTS** (e.g., "colmena/contexts")
+  - Agent Identifier: **COMPOSE_PROJECT_NAME** or **AGENT_ID** (e.g., "sensor", "ColmenaAgent1")
   
 ### 2.3 Test application
 
@@ -917,6 +920,79 @@ curl -X PUT -H "content-type:application/json" -d "{\"company_premises_building\
 curl -X PUT -H "content-type:application/json" -d "{\"company_premises_building\":\"Red\",\"floor\":\"1\",\"room\":\"002\", \"value\":\"124\"}" http://zenoh-router:8000/colmena/metrics/ColmenaAgent1/App01/processing_time
 ```
 
+----------------------------
+
+## 4. Notifications and violations
+
+#### NOTIFICATION
+
+```json
+{
+    "serviceId": "ExampleApplication_01",
+    "slaId": "ExampleApplication_01-Q29AviokdzpGPpdm3WrjD6",
+    "KPIs": [{
+            "roleId": "ExampleApplication_01-Q29AviokdzpGPpdm3WrjD6",
+            "query": "[go_memstats_frees_total#LABELS#] \u003e 50000",
+            "level": "Met",
+            "value": 58048582,
+            "threshold": "",
+            "violations": null,
+            "total_violations": 0
+        }
+    ]
+}
+```
+
+#### VIOLATIONs
+
+```json
+[{
+        "serviceId": "ExampleApplication_01",
+        "slaId": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY",
+        "KPIs": [{
+                "roleId": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY",
+                "query": "[go_memstats_frees_total#LABELS#] \u003c 50000",
+                "level": "Broken",
+                "value": 57198792,
+                "threshold": "",
+                "violations": [{
+                        "id": "",
+                        "agreement_id": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY",
+                        "guarantee": "Processing01",
+                        "datetime": "2025-05-21T17:42:38.881+01:00",
+                        "constraint": "[go_memstats_frees_total] \u003c 50000",
+                        "values": [{
+                                "key": "go_memstats_frees_total",
+                                "action": "",
+                                "namespace": "",
+                                "value": 57198792,
+                                "datetime": "2025-05-21T17:42:38.881+01:00"
+                            }
+                        ],
+                        "appID": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY"
+                    }, {
+                        "id": "",
+                        "agreement_id": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY",
+                        "guarantee": "Processing01",
+                        "datetime": "2025-05-21T17:42:38.881+01:00",
+                        "constraint": "[go_memstats_frees_total] \u003c 50000",
+                        "values": [{
+                                "key": "go_memstats_frees_total",
+                                "action": "",
+                                "namespace": "",
+                                "value": 58516981,
+                                "datetime": "2025-05-21T17:42:38.881+01:00"
+                            }
+                        ],
+                        "appID": "ExampleApplication_01-iCP7SemAHCbTXYQcENXjxY"
+                    }
+                ],
+                "total_violations": 1
+            }
+        ]
+    }
+]
+```
 
 ----------------------------
 
