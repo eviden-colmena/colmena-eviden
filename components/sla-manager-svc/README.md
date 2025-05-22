@@ -924,6 +924,8 @@ curl -X PUT -H "content-type:application/json" -d "{\"company_premises_building\
 
 ## 4. Notifications and violations
 
+Violations and notifications sent to other components (i.e. the endpoint set in **NOTIFICATION_ENDPOINT** environment variable) have the following format:
+
 #### NOTIFICATION
 
 ```json
@@ -944,6 +946,8 @@ curl -X PUT -H "content-type:application/json" -d "{\"company_premises_building\
 ```
 
 #### VIOLATIONs
+
+Violations are all grouped in a list like the following:
 
 ```json
 [{
