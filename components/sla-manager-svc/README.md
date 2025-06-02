@@ -28,7 +28,10 @@
     - [STARTED SLA](#started-sla)
       - [ASSESSMENT OK](#assessment-ok)
       - [VIOLATION](#violation)
-  - [4. Notifications and violations](#4-notifications-and-violations)
+  - [4. KPI queries](#4-kpi-queries)
+  - [5. Notifications and violations](#5-notifications-and-violations)
+      - [NOTIFICATION](#notification)
+      - [VIOLATIONs](#violations)
   - [LICENSES](#licenses)
 
 ----------------------------
@@ -49,6 +52,9 @@ The SLA Manager provides the following methods:
 - **DELETE api/v1/sla/:id** deletes a SLA
 - **GET api/v1/slas** gets the information about all the SLAs
 - **GET api/v1/slas/:id** gets the information about all the SLAs of a specific service
+- **GET api/v1/kpis** gets the information about all the SLAs (KPI format)
+- **GET api/v1/kpis/:id** gets the information about all the SLAs of a specific service (KPI format)
+- **GET api/v1/kpi/:id** gets the information about a specific SLA (KPI format)
 
 ### SLAs 
 
@@ -922,7 +928,113 @@ curl -X PUT -H "content-type:application/json" -d "{\"company_premises_building\
 
 ----------------------------
 
-## 4. Notifications and violations
+## 4. KPI queries
+
+To get the SLAs in a "KPI model", you have to use the following endpoints:
+
+- **GET api/v1/kpis** gets the information about all the SLAs (KPI format)
+- **GET api/v1/kpis/:id** gets the information about all the SLAs of a specific service (KPI format)
+- **GET api/v1/kpi/:id** gets the information about a specific SLA (KPI format)
+
+Examples:
+
+Use **GET api/v1/kpis** to get all SLAs / KPIs
+
+```json
+{
+  "Message": "Objects found",
+  "Method": "GetKPIs",
+  "Resp": "ok",
+  "Response": [
+    {
+      "serviceId": "ExampleApplication_01",
+      "slaId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+      "KPIs": [
+        {
+          "roleId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+          "query": "[go_memstats_frees_total#LABELS#] \u003C 50000",
+          "level": "Broken",
+          "value": 0,
+          "threshold": "",
+          "violations": null,
+          "total_violations": 1
+        }
+      ]
+    },
+    {
+      "serviceId": "ExampleApplication_00",
+      "slaId": "ExampleApplication_00-TQG7gzTwZVPjdvimJYrgLQ",
+      "KPIs": [
+        {
+          "roleId": "ExampleApplication_00-TQG7gzTwZVPjdvimJYrgLQ",
+          "query": "[go_memstats_frees_total#LABELS#] \u003E 48000",
+          "level": "Met",
+          "value": 0,
+          "threshold": "",
+          "violations": null,
+          "total_violations": 0
+        }
+      ]
+    }
+  ]
+}
+```
+
+Use **GET api/v1/kpis/:id** to get all SLAs / KPIs from a service
+
+```json
+{
+  "Message": "Object found",
+  "Method": "GetKPIsByServiceId",
+  "Resp": "ok",
+  "Response": [
+    {
+      "serviceId": "ExampleApplication_01",
+      "slaId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+      "KPIs": [
+        {
+          "roleId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+          "query": "[go_memstats_frees_total#LABELS#] \u003C 50000",
+          "level": "Critical",
+          "value": 0,
+          "threshold": "",
+          "violations": null,
+          "total_violations": 2
+        }
+      ]
+    }
+  ]
+}
+```
+
+Use **GET api/v1/kpi/:id** to get the KPI information of a specific SLA
+
+```json
+{
+  "Message": "Object found",
+  "Method": "GetKPI",
+  "Resp": "ok",
+  "Response": {
+    "serviceId": "ExampleApplication_01",
+    "slaId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+    "KPIs": [
+      {
+        "roleId": "ExampleApplication_01-f5tjRgFF9HZ5KbgznKamid",
+        "query": "[go_memstats_frees_total#LABELS#] \u003C 50000",
+        "level": "Critical",
+        "value": 0,
+        "threshold": "",
+        "violations": null,
+        "total_violations": 2
+      }
+    ]
+  }
+}
+```
+
+----------------------------
+
+## 5. Notifications and violations
 
 Violations and notifications sent to other components (i.e. the endpoint set in **NOTIFICATION_ENDPOINT** environment variable) have the following format:
 
