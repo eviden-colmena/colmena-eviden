@@ -68,10 +68,10 @@ Service definition (input model example):
 	}
 */
 type InputSLA struct {
-	ServiceId                ServiceId      `json:"id"`
-	Roles                    []InputSLARole `json:"dockerRoleDefinitions,omitempty"`
-	DockerContextDefinitions []interface{}  `json:"dockerContextDefinitions,omitempty"`
-	Kpis                     []interface{}  `json:"kpis,omitempty"`
+	ServiceId                ServiceId         `json:"id"`
+	Roles                    []InputSLARole    `json:"dockerRoleDefinitions,omitempty"`
+	DockerContextDefinitions []interface{}     `json:"dockerContextDefinitions,omitempty"`
+	Kpis                     []InputSLARoleKPI `json:"kpis,omitempty"`
 }
 
 type ServiceId struct {

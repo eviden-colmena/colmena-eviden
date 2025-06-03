@@ -122,8 +122,8 @@ func (not _notifier) NotifyViolations(qos *model.SLA, result *amodel.Result) {
 		SLAId:     qos.Id,
 		Kpis: []model.OutputSLAKpi{
 			{
-				RoleId:          qos.Id,
-				Query:           qos.Details.Guarantees[0].Query,
+				RoleId:          qos.Details.Guarantees[0].Name,
+				Query:           qos.Details.Guarantees[0].Constraint,
 				Value:           vs[0].Values[0].Value,
 				Level:           qos.Assessment.Level,
 				Threshold:       "", //qos.Details.Guarantees[0].Query,
@@ -182,8 +182,8 @@ func (not _notifier) NotifyStatus(qos *model.SLA, result *amodel.Result) {
 		SLAId:     qos.Id,
 		Kpis: []model.OutputSLAKpi{
 			{
-				RoleId:          qos.Id,
-				Query:           qos.Details.Guarantees[0].Query,
+				RoleId:          qos.Details.Guarantees[0].Name,
+				Query:           qos.Details.Guarantees[0].Constraint,
 				Value:           res, //result.LastValues,
 				Level:           qos.Assessment.Level,
 				Threshold:       "", //qos.Details.Guarantees[0].Query,

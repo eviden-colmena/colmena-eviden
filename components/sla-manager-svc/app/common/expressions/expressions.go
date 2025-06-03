@@ -63,30 +63,25 @@ func setLabelsMark(metrics_query string) (string, error) {
 
 	totalInitBrackets := countOccurrences(metrics_query, '[')
 	if posBracketIni > 0 && totalInitBrackets == 1 {
-		// "avg_over_time(processing_time[5s])"
-		logs.GetLogger().Debug(pathLOG + "==> periodo de tiempo")
+		// ej. "avg_over_time(processing_time[5s])"
 		return "[" + strings.Replace(metrics_query, "[", LABEL_MARK+"[", 1) + "]", nil
 	} else if posBracketIni == 0 && totalInitBrackets == 1 {
-		// "[go_memstats_frees_total]"
-		logs.GetLogger().Debug(pathLOG + "==> formato ok, sin periodo de tiempo")
+		// ej. "[go_memstats_frees_total]"
 		return strings.Replace(metrics_query, "]", LABEL_MARK+"]", 1), nil
 	} else if posBracketIni == 0 && totalInitBrackets == 2 && strings.HasSuffix(metrics_query, "]") {
-		// "[avg_over_time(processing_time[5s])]"
-		logs.GetLogger().Debug(pathLOG + "==> formato ok. Buscar periodod de tiempo")
+		// ej. "[avg_over_time(processing_time[5s])]"
 		return "[" + strings.Replace(metrics_query[1:], "[", LABEL_MARK+"[", 1), nil
 	} else if posBracketIni < 0 {
-		// No '[', ']'
-		// buscamos ')'
+		// ej. No '[', ']' ==>  ')'
 		posParenthEnd := strings.Index(metrics_query, ")")
 		if posParenthEnd > 0 {
-			logs.GetLogger().Debug(pathLOG + "==> formato ok, sin brackets")
 			return "[" + strings.Replace(metrics_query, ")", LABEL_MARK+")", 1), nil
 		} else {
-			logs.GetLogger().Debug(pathLOG + "==> formato ok, sin brackets")
 			return "[" + metrics_query + LABEL_MARK + "]", nil
 		}
 	}
 
+	logs.GetLogger().Error(pathLOG + "no valid expression")
 	return "", errors.New("not valid 'metrics_query' expression. Expression format: '[<expression>]' or '<expression>[interval]' or <expression> ")
 }
 

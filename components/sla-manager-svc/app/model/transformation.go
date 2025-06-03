@@ -38,8 +38,8 @@ func SLAModelToOutputSLA(qos SLA) (OutputSLA, error) {
 		SLAId:     qos.Id,
 		Kpis: []OutputSLAKpi{
 			{
-				RoleId:          qos.Id,
-				Query:           qos.Details.Guarantees[0].Query,
+				RoleId:          qos.Details.Guarantees[0].Name,
+				Query:           qos.Details.Guarantees[0].Constraint,
 				Value:           0, // TODO res, //result.LastValues,
 				Level:           qos.Assessment.Level,
 				Threshold:       "", //qos.Details.Guarantees[0].Query,
@@ -82,56 +82,79 @@ func InputSLAModelToSLAModel(c *gin.Context) ([]SLA, error) {
 	}
 
 	// InputSLA ==> SLA(s) managed by the app
-	if len(input.Roles) > 0 {
-		x := common.GetIntEnv(cfg.ASSESSMENT_X, DEFAULT_ASSESSMENT_X)
-		y := common.GetIntEnv(cfg.ASSESSMENT_Y, DEFAULT_ASSESSMENT_Y)
-		z := common.GetIntEnv(cfg.ASSESSMENT_Z, DEFAULT_ASSESSMENT_Z)
+	// KPIs
+	if len(input.Kpis) > 0 {
+		slas1 := listToSLAModel(input, "", input.Kpis)
+		if len(slas1) > 0 {
+			slas = append(slas, slas1...)
+		}
+	}
 
+	// Roles definition
+	if len(input.Roles) > 0 {
 		for _, r := range input.Roles {
 			if len(r.Kpis) > 0 {
-				uid := uuid.New()
-				sla := SLA{}
-
-				sla.Name = input.ServiceId.Value
-				sla.Id = input.ServiceId.Value + "-" + uid
-
-				// assessment
-				sla.Assessment.TotalExecutions = 0
-				sla.Assessment.TotalViolations = 0
-				sla.Assessment.X = x
-				sla.Assessment.XCounter = 0
-				sla.Assessment.Y = y
-				sla.Assessment.YCounter = 0
-				sla.Assessment.Z = z
-				sla.Assessment.ZCounter = 0
-				sla.Assessment.Level = ASSESSMENT_LEVEL_UNKNOWN // Broken, Critical, Met, Desired, Unstable, Unknown
-
-				// constraint expression
-				expr, err := expressions.CheckAndParseConstraint(r.Kpis[0].Query)
-				if err != nil {
-					expr = r.Kpis[0].Query
+				slas2 := listToSLAModel(input, r.Id, r.Kpis)
+				if len(slas2) > 0 {
+					slas = append(slas, slas2...)
 				}
-
-				// guarantees
-				sla.Details.Guarantees = make([]Guarantee, 1) // TODO for each KPI => 1 Guarantee
-				sla.Details.Guarantees[0].Name = r.Id
-				sla.Details.Guarantees[0].Constraint = r.Kpis[0].Query
-				sla.Details.Guarantees[0].Query = expr
-				sla.Details.Guarantees[0].Scope = strings.Trim(r.Kpis[0].Scope, " ")
-				sla.Details.Guarantees[0].ScopeTemplate = strings.Trim(r.Kpis[0].Scope, " ")
-
-				if len(sla.Details.Guarantees[0].Constraint) > 0 && len(sla.Details.Guarantees[0].Scope) > 0 {
-					sla.State = PAUSED
-				} else if len(sla.Details.Guarantees[0].Constraint) > 0 {
-					sla.State = STARTED
-				} else {
-					sla.State = INVALID
-				}
-
-				slas = append(slas, sla)
 			}
 		}
 	}
 
 	return slas, nil
+}
+
+// listToSLAModel
+func listToSLAModel(input InputSLA, roleId string, l []InputSLARoleKPI) []SLA {
+	var slas []SLA
+
+	x := common.GetIntEnv(cfg.ASSESSMENT_X, DEFAULT_ASSESSMENT_X)
+	y := common.GetIntEnv(cfg.ASSESSMENT_Y, DEFAULT_ASSESSMENT_Y)
+	z := common.GetIntEnv(cfg.ASSESSMENT_Z, DEFAULT_ASSESSMENT_Z)
+
+	for _, kpi := range l {
+		uid := uuid.New()
+		sla := SLA{}
+
+		sla.Name = input.ServiceId.Value
+		sla.Id = input.ServiceId.Value + "-" + uid
+
+		// assessment
+		sla.Assessment.TotalExecutions = 0
+		sla.Assessment.TotalViolations = 0
+		sla.Assessment.X = x
+		sla.Assessment.XCounter = 0
+		sla.Assessment.Y = y
+		sla.Assessment.YCounter = 0
+		sla.Assessment.Z = z
+		sla.Assessment.ZCounter = 0
+		sla.Assessment.Level = ASSESSMENT_LEVEL_UNKNOWN // Broken, Critical, Met, Desired, Unstable, Unknown
+
+		// constraint expression
+		expr, err := expressions.CheckAndParseConstraint(kpi.Query)
+		if err != nil {
+			expr = kpi.Query
+		}
+
+		// guarantees
+		sla.Details.Guarantees = make([]Guarantee, 1) // TODO for each KPI => 1 Guarantee
+		sla.Details.Guarantees[0].Name = roleId
+		sla.Details.Guarantees[0].Constraint = kpi.Query
+		sla.Details.Guarantees[0].Query = expr
+		sla.Details.Guarantees[0].Scope = strings.ReplaceAll(kpi.Scope, " ", "")
+		sla.Details.Guarantees[0].ScopeTemplate = strings.ReplaceAll(kpi.Scope, " ", "")
+
+		if len(sla.Details.Guarantees[0].Constraint) > 0 && len(sla.Details.Guarantees[0].Scope) > 0 {
+			sla.State = PAUSED
+		} else if len(sla.Details.Guarantees[0].Constraint) > 0 {
+			sla.State = STARTED
+		} else {
+			sla.State = INVALID
+		}
+
+		slas = append(slas, sla)
+	}
+
+	return slas
 }

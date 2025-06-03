@@ -57,7 +57,7 @@ Main function. Environment variables used by the SLA & QoS Manager:
 */
 func main() {
 	// tests: environment variables
-	//os.Setenv("AGENT_ID", "agente01")
+	//os.Setenv("AGENT_ID", "ColmenaAgent1")
 	//os.Setenv("MONITORING_ADAPTER", "prometheus")
 	//os.Setenv("PROMETHEUS_ADDRESS", "http://192.168.137.47:9090")                    //"http://192.168.137.25:9091") // http://localhost:9090
 	//os.Setenv("NOTIFIER_ADAPTER", "rest_endpoint")                                   // "grpc"

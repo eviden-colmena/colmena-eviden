@@ -82,7 +82,7 @@ func AssessActiveQoSDefinitions(cfg Config) {
 
 					for _, qosd := range qosdefs2 {
 						if qosd.State != model.STARTED {
-							logs.GetLogger().Error(pathLOG + "[AssessActiveQoSDefinitions] SLA not started")
+							logs.GetLogger().Warn(pathLOG + "[AssessActiveQoSDefinitions] SLA with ID " + qosd.Id + " has the status " + string(qosd.State))
 						} else {
 							// do QoS assessment
 							logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] SLA Assessment ", qosd.Id)
