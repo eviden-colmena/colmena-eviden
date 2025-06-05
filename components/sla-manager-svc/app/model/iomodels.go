@@ -120,6 +120,6 @@ type OutputSLAKpi struct {
 	Level           string      `json:"level"`
 	Value           interface{} `json:"value"`
 	Threshold       string      `json:"threshold"`
-	Violations      []Violation `json:"violations"`
+	Violations      []Violation `json:"violations,omitempty"`
 	TotalViolations int         `json:"total_violations"`
 }

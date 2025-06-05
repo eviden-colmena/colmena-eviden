@@ -78,14 +78,14 @@ func AssessActiveQoSDefinitions(cfg Config) {
 			// iterate SLA evaluation results
 			for _, qosdefs2 := range grouped_qosdefs {
 				if len(qosdefs2) > 0 {
-					logs.GetLogger().Infof(pathLOG + "[AssessActiveQoSDefinitions] Evaluating service [" + qosdefs2[0].Name + "]")
+					logs.GetLogger().Infof(pathLOG + "[AssessActiveQoSDefinitions] => Evaluating service [" + qosdefs2[0].Name + "]")
 
 					for _, qosd := range qosdefs2 {
 						if qosd.State != model.STARTED {
 							logs.GetLogger().Warn(pathLOG + "[AssessActiveQoSDefinitions] SLA with ID " + qosd.Id + " has the status " + string(qosd.State))
 						} else {
 							// do QoS assessment
-							logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] SLA Assessment ", qosd.Id)
+							logs.GetLogger().Debug(pathLOG+"[AssessActiveQoSDefinitions] ===> SLA Assessment ", qosd.Id)
 
 							result, totalResults := AssessQoS(&qosd, cfg)
 							qosd.Assessment.TotalExecutions += 1

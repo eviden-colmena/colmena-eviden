@@ -22,6 +22,7 @@ import (
 	"colmena/sla-management-svc/app/common"
 	"colmena/sla-management-svc/app/common/cfg"
 	"colmena/sla-management-svc/app/common/expressions"
+	"colmena/sla-management-svc/app/common/logs"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,29 @@ import (
  * Transforms an SLA Model to a OutputSLA model
  */
 func SLAModelToOutputSLA(qos SLA) (OutputSLA, error) {
+	res := float64(-1)
+
+	if len(qos.Assessment.Guarantees) > 0 {
+		for key := range qos.Assessment.Guarantees {
+			//res = qos.Assessment.Guarantees[key].LastValues
+
+			if len(qos.Assessment.Guarantees[key].LastValues) > 0 {
+				for key2 := range qos.Assessment.Guarantees[key].LastValues {
+					if len(key2) > 0 {
+						r, ok := qos.Assessment.Guarantees[key].LastValues[key2].Value.(float64)
+						if !ok {
+							logs.GetLogger().Error(" Value is not a number")
+						} else {
+							res = r
+						}
+						//logs.GetLogger().Debugf(pathLOG + " break")
+						break
+					}
+				}
+			}
+
+		}
+	}
 
 	output_model := OutputSLA{
 		ServiceId: qos.Name,
@@ -39,10 +63,10 @@ func SLAModelToOutputSLA(qos SLA) (OutputSLA, error) {
 		Kpis: []OutputSLAKpi{
 			{
 				RoleId:          qos.Details.Guarantees[0].Name,
-				Query:           qos.Details.Guarantees[0].Constraint,
-				Value:           0, // TODO res, //result.LastValues,
+				Query:           qos.Details.Guarantees[0].OQuery,
+				Value:           res, //0, // TODO res, //result.LastValues,
 				Level:           qos.Assessment.Level,
-				Threshold:       "", //qos.Details.Guarantees[0].Query,
+				Threshold:       qos.Assessment.Threshold, //qos.Details.Guarantees[0].Query,
 				TotalViolations: qos.Assessment.TotalViolations,
 			},
 		},
@@ -132,16 +156,23 @@ func listToSLAModel(input InputSLA, roleId string, l []InputSLARoleKPI) []SLA {
 		sla.Assessment.Level = ASSESSMENT_LEVEL_UNKNOWN // Broken, Critical, Met, Desired, Unstable, Unknown
 
 		// constraint expression
-		expr, err := expressions.CheckAndParseConstraint(kpi.Query)
+		expr, threshold, err := expressions.CheckAndParseConstraint(kpi.Query)
 		if err != nil {
 			expr = kpi.Query
+			logs.GetLogger().Warn(" expr: "+expr+", Error: ", err)
+		} else {
+			logs.GetLogger().Debug(" expr: " + expr)
 		}
+
+		// threshold
+		sla.Assessment.Threshold = threshold
 
 		// guarantees
 		sla.Details.Guarantees = make([]Guarantee, 1) // TODO for each KPI => 1 Guarantee
 		sla.Details.Guarantees[0].Name = roleId
-		sla.Details.Guarantees[0].Constraint = kpi.Query
+		sla.Details.Guarantees[0].Constraint = strings.ReplaceAll(expr, "#LABELS#", "") //kpi.Query
 		sla.Details.Guarantees[0].Query = expr
+		sla.Details.Guarantees[0].OQuery = kpi.Query
 		sla.Details.Guarantees[0].Scope = strings.ReplaceAll(kpi.Scope, " ", "")
 		sla.Details.Guarantees[0].ScopeTemplate = strings.ReplaceAll(kpi.Scope, " ", "")
 

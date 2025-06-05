@@ -227,6 +227,7 @@ type Assessment struct {
 	Z              int                            `json:"z,omitempty"`                         // met to broken; z (default 5)
 	ZCounter       int                            `json:"z_met_to_broken_count,omitempty"`     // met to broken; z counter
 	Level          string                         `json:"level,omitempty"`                     // Broken, Critical, Met, Desired, Unstable, Unknown
+	Threshold      string                         `json:"threshold,omitempty"`
 	Violated       bool                           `json:"violated,omitempty"`
 	FirstExecution time.Time                      `json:"first_execution"`
 	LastExecution  time.Time                      `json:"last_execution"`
@@ -260,6 +261,7 @@ type Guarantee struct {
 	Name          string `json:"name"`
 	Constraint    string `json:"constraint"`
 	Query         string `json:"query"`
+	OQuery        string `json:"oquery"`
 	Scope         string `json:"scope"`
 	ScopeTemplate string `json:"scopeTemplate"`
 }

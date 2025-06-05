@@ -66,7 +66,7 @@ func main() {
 	//os.Setenv("CONTEXT_ZENOH_CONTEXTS", "colmena/contexts")
 	//os.Setenv("COMPOSE_PROJECT_NAME", "ColmenaAgent1")
 
-	logs.GetLogger().Info("Starting SLA & QoS Manager [2025.06.02 - 1] ...")
+	logs.GetLogger().Info("Starting SLA & QoS Manager [2025.06.05 - 1] ...")
 
 	// main configuration
 	// variables are set through environment variables (i.e. using Kubernetes or Docker deployment files)
