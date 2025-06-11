@@ -23,6 +23,7 @@ import (
 	"colmena/sla-management-svc/app/common/cfg"
 	"colmena/sla-management-svc/app/common/expressions"
 	"colmena/sla-management-svc/app/common/logs"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -165,7 +166,13 @@ func listToSLAModel(input InputSLA, roleId string, l []InputSLARoleKPI) []SLA {
 		}
 
 		// threshold
-		sla.Assessment.Threshold = threshold
+		floatValue, err := strconv.ParseFloat(threshold, 64)
+		if err != nil {
+			logs.GetLogger().Error("threshold value ['"+threshold+"'] is not a float. Error: ", err)
+			sla.Assessment.Threshold = -1
+		} else {
+			sla.Assessment.Threshold = floatValue
+		}
 
 		// guarantees
 		sla.Details.Guarantees = make([]Guarantee, 1) // TODO for each KPI => 1 Guarantee

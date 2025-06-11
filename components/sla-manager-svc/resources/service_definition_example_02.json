@@ -14,7 +14,7 @@
             "scope": "company_premises/building=."
         },
         {
-            "query": "[go_memstats_frees_total] < 50000",
+            "query": "go_memstats_frees_total < 50000",
             "scope": ""
         }
     ],

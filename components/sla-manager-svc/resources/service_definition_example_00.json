@@ -17,7 +17,7 @@
                 "CPU"
             ],
             "kpis": [{
-                "query": "[go_memstats_frees_total] > 48000",
+                "query": "go_memstats_frees_total > 48000",
                 "scope": ""
             }]
         }

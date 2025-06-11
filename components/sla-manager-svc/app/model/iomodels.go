@@ -119,7 +119,7 @@ type OutputSLAKpi struct {
 	Query           string      `json:"query"`
 	Level           string      `json:"level"`
 	Value           interface{} `json:"value"`
-	Threshold       string      `json:"threshold"`
+	Threshold       float64     `json:"threshold"`
 	Violations      []Violation `json:"violations,omitempty"`
 	TotalViolations int         `json:"total_violations"`
 }
