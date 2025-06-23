@@ -237,12 +237,13 @@ type Assessment struct {
 
 // Broken, Critical, Met, Desired, Unstable, Unknown
 const (
-	ASSESSMENT_LEVEL_UNKNOWN  = "Unknown"
-	ASSESSMENT_LEVEL_UNSTABLE = "Unstable"
-	ASSESSMENT_LEVEL_DESIRED  = "Desired"
-	ASSESSMENT_LEVEL_MET      = "Met"
-	ASSESSMENT_LEVEL_CRITICAL = "Critical"
-	ASSESSMENT_LEVEL_BROKEN   = "Broken"
+	ASSESSMENT_LEVEL_UNKNOWN   = "Unknown"
+	ASSESSMENT_LEVEL_NORESULTS = "Unknown_NoResults"
+	ASSESSMENT_LEVEL_UNSTABLE  = "Unstable"
+	ASSESSMENT_LEVEL_DESIRED   = "Desired"
+	ASSESSMENT_LEVEL_MET       = "Met"
+	ASSESSMENT_LEVEL_CRITICAL  = "Critical"
+	ASSESSMENT_LEVEL_BROKEN    = "Broken"
 )
 
 // AssessmentGuarantee contain the assessment information for a guarantee term

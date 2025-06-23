@@ -36,7 +36,7 @@ import (
 func SLAModelToOutputSLA(qos SLA) (OutputSLA, error) {
 	res := float64(-1)
 
-	if len(qos.Assessment.Guarantees) > 0 {
+	if qos.Assessment.Level != ASSESSMENT_LEVEL_NORESULTS && len(qos.Assessment.Guarantees) > 0 {
 		for key := range qos.Assessment.Guarantees {
 			//res = qos.Assessment.Guarantees[key].LastValues
 
